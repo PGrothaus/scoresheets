@@ -1,3 +1,4 @@
+import sys
 from datasets.build import build_move_section_only_dataset
 
 
@@ -12,3 +13,8 @@ def build(key):
         print(key)
         print("No build method defined for this key.")
         return None
+
+
+if "__main__" == __name__:
+    key = sys.argv[1]
+    build(key)
