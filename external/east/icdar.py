@@ -9,6 +9,7 @@ import scipy.optimize
 import matplotlib.pyplot as plt
 import matplotlib.patches as Patches
 from shapely.geometry import Polygon
+import random
 
 import tensorflow as tf
 
@@ -467,6 +468,9 @@ def generate_rbox(im_size, polys, tags):
     geo_map = np.zeros((h, w, 5), dtype=np.float32)
     # mask used during traning, to ignore some hard areas
     training_mask = np.ones((h, w), dtype=np.uint8)
+    g = list(zip(polys, tags))
+    random.shuffle(g)
+    polys, tags = zip(* g[:20])
     for poly_idx, poly_tag in enumerate(zip(polys, tags)):
         poly = poly_tag[0]
         tag = poly_tag[1]
@@ -580,6 +584,22 @@ def generate_rbox(im_size, polys, tags):
     return score_map, geo_map, training_mask
 
 
+import os
+import pickle
+
+
+def cached_generate():
+    datadir = FLAGS.training_data_path
+    files = os.listdir(datadir)
+    files = [os.path.join(datadir, f) for f in files if f.endswith('.pkl')]
+    while True:
+        fp = random.choice(files)
+        with open(fp, 'rb') as f:
+            batch = pickle.load(f)
+        yield batch
+
+
+
 def generator(input_size=512, batch_size=32,
               background_ratio=3./8,
               random_scale=np.array([0.5, 1, 2.0, 3.0]),
@@ -598,6 +618,7 @@ def generator(input_size=512, batch_size=32,
         for i in index:
             try:
                 im_fn = image_list[i]
+                t0 = time.time()
                 im = cv2.imread(im_fn)
                 # print im_fn
                 h, w, _ = im.shape
@@ -606,8 +627,10 @@ def generator(input_size=512, batch_size=32,
                     print('text file {} does not exists'.format(txt_fn))
                     continue
 
+                t0 = time.time()
                 text_polys, text_tags = load_annoataion(txt_fn)
 
+                t0 = time.time()
                 text_polys, text_tags = check_and_validate_polys(text_polys, text_tags, (h, w))
                 # if text_polys.shape[0] == 0:
                 #     continue
@@ -634,6 +657,7 @@ def generator(input_size=512, batch_size=32,
                     geo_map = np.zeros((input_size, input_size, geo_map_channels), dtype=np.float32)
                     training_mask = np.ones((input_size, input_size), dtype=np.uint8)
                 else:
+                    t0 = time.time()
                     im, text_polys, text_tags = crop_area(im, text_polys, text_tags, crop_background=False)
                     if text_polys.shape[0] == 0:
                         continue
@@ -656,6 +680,8 @@ def generator(input_size=512, batch_size=32,
                     text_polys[:, :, 1] *= resize_ratio_3_y
                     new_h, new_w, _ = im.shape
                     score_map, geo_map, training_mask = generate_rbox((new_h, new_w), text_polys, text_tags)
+                    time0 = time.time()
+                    print("generate_rbox,", time.time()-t0)
 
                 if vis:
                     fig, axs = plt.subplots(3, 2, figsize=(20, 30))
@@ -707,6 +733,7 @@ def generator(input_size=512, batch_size=32,
                 training_masks.append(training_mask[::4, ::4, np.newaxis].astype(np.float32))
 
                 if len(images) == batch_size:
+                    print(len(images))
                     yield images, image_fns, score_maps, geo_maps, training_masks
                     images = []
                     image_fns = []
@@ -721,7 +748,7 @@ def generator(input_size=512, batch_size=32,
 
 def get_batch(num_workers, **kwargs):
     try:
-        enqueuer = GeneratorEnqueuer(generator(**kwargs), use_multiprocessing=True)
+        enqueuer = GeneratorEnqueuer(cached_generate(), use_multiprocessing=True)
         print('Generator use 10 batches for buffering, this may take a while, you can tune this yourself.')
         enqueuer.start(max_queue_size=10, workers=num_workers)
         generator_output = None

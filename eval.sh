@@ -1,0 +1,1 @@
+python3 eval.py --test_data_path=/data/scoresheets/dataset/test/ --gpu_list=0 --checkpoint_path=/data/scoresheets/test_resnet_v1_50_rbox/ --output_dir=/data/scoresheets/test_resnet_v1_50_rbox/results/
