@@ -1,0 +1,30 @@
+# General EAST settings
+input_size: 512
+batch_size_per_gpu: 8
+num_readers: 2
+learning_rate: 0.0001
+max_steps: 1000
+moving_average_decay: 0.997
+gpu_list: '0'
+checkpoint_path: /tmp/east_resnet_v1_50_rbox/
+restore: False
+save_checkpoint_steps: 100
+save_summary_steps: 100
+pretrained_model_path: None
+geometry: RBOX  # or QUAD
+max_image_large_side: 1280
+max_text_size: 800
+min_text_size: 10
+min_crop_side_ratio: 0.1
+text_scale: 512
+
+# Random Seed
+seed: 42
+
+# Dataset Creation
+n_batches_to_create: 750
+
+# Local Settings
+pretrained_model_path: /data/scoresheets/pretrained_east/resnet_v1_50.ckpt
+training_raw_data_path: /data/scoresheets/dataset/move-section-only/train/
+training_batches_path: /data/scoresheets/dataset/move-section-only/train/batches/

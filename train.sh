@@ -1,1 +1,0 @@
-python3 multigpu_train.py --gpu_list=0 --input_size=512 --batch_size_per_gpu=8 --checkpoint_path=/data/scoresheets/test_resnet_v1_50_rbox/ --text_scale=512 --training_data_path=/data/scoresheets/dataset/train/batches/ --geometry=RBOX --learning_rate=0.001 --num_readers=2 --pretrained_model_path=/data/scoresheets/pretrained_east/resnet_v1_50.ckpt

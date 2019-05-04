@@ -48,12 +48,8 @@ RUN apt-get install python3-tk
 RUN pip install shapely
 
 WORKDIR /src
-RUN mkdir /src/EAST
-RUN cd /src
-COPY . /src/EAST
-WORKDIR /src/EAST
+COPY . /src
+WORKDIR /src
 
-RUN chmod +x train.sh
-RUN chmod +x train_move_only.sh
 RUN chmod +x eval.sh
 ENV PYTHONPATH "$PYTHONPATH:/opt/opencv/build/lib"

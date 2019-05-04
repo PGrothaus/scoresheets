@@ -5,7 +5,7 @@ import cv2
 import time
 import os
 import numpy as np
-import scipy.optimize
+import pickle
 import matplotlib.pyplot as plt
 import matplotlib.patches as Patches
 from shapely.geometry import Polygon
@@ -15,22 +15,6 @@ import tensorflow as tf
 
 from data_util import GeneratorEnqueuer
 
-tf.app.flags.DEFINE_string('training_data_path', '/data/ocr/icdar2015/',
-                           'training dataset to use')
-tf.app.flags.DEFINE_integer('max_image_large_side', 1280,
-                            'max image size of training')
-tf.app.flags.DEFINE_integer('max_text_size', 800,
-                            'if the text in the input image is bigger than this, then we resize'
-                            'the image according to this')
-tf.app.flags.DEFINE_integer('min_text_size', 10,
-                            'if the text size is smaller than this, we ignore it during training')
-tf.app.flags.DEFINE_float('min_crop_side_ratio', 0.1,
-                          'when doing random crop from input image, the'
-                          'min length of min(H, W')
-tf.app.flags.DEFINE_string('geometry', 'RBOX',
-                           'which geometry to generate, RBOX or QUAD')
-
-
 FLAGS = tf.app.flags.FLAGS
 
 
@@ -38,7 +22,7 @@ def get_images():
     files = []
     for ext in ['jpg', 'png', 'jpeg', 'JPG']:
         files.extend(glob.glob(
-            os.path.join(FLAGS.training_data_path, '*.{}'.format(ext))))
+            os.path.join(FLAGS.training_raw_data_path, '*.{}'.format(ext))))
     return files
 
 
@@ -584,12 +568,8 @@ def generate_rbox(im_size, polys, tags):
     return score_map, geo_map, training_mask
 
 
-import os
-import pickle
-
-
 def cached_generate():
-    datadir = FLAGS.training_data_path
+    datadir = FLAGS.training_batches_path
     files = os.listdir(datadir)
     files = [os.path.join(datadir, f) for f in files if f.endswith('.pkl')]
     while True:
@@ -599,14 +579,13 @@ def cached_generate():
         yield batch
 
 
-
 def generator(input_size=512, batch_size=32,
               background_ratio=3./8,
               random_scale=np.array([0.5, 1, 2.0, 3.0]),
               vis=False):
     image_list = np.array(get_images())
     print('{} training images in {}'.format(
-        image_list.shape[0], FLAGS.training_data_path))
+        image_list.shape[0], FLAGS.training_raw_data_path))
     index = np.arange(0, image_list.shape[0])
     while True:
         np.random.shuffle(index)
