@@ -50,3 +50,5 @@ def load_east_flag_parameters():
     tf.app.flags.DEFINE_integer('text_scale', conf.get_param('text_scale'), '')
     tf.app.flags.DEFINE_integer(
         'n_batches_to_create', conf.get_param('n_batches_to_create'), '')
+    tf.app.flags.DEFINE_boolean(
+        'visualise', conf.get_param("visualise"), '')

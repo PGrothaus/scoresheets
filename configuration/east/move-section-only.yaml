@@ -23,6 +23,7 @@ seed: 42
 
 # Dataset Creation
 n_batches_to_create: 750
+visualise: True
 
 # Local Settings
 pretrained_model_path: /data/scoresheets/pretrained_east/resnet_v1_50.ckpt

@@ -1,5 +1,5 @@
 import sys
-from icdar import generator
+from external.east.icdar import generator
 import tensorflow as tf
 import pickle
 import os
@@ -33,7 +33,8 @@ def main(argv=None):
     count = 0
     with ProgressBar(max_value=n_batches) as bar:
         while count < n_batches:
-            for batch in generator(batch_size=FLAGS.batch_size_per_gpu):
+            for batch in generator(batch_size=FLAGS.batch_size_per_gpu,
+                                   vis=FLAGS.visualise):
                 save_batch(batch, 0+count)
                 count += 1
                 bar.update(count)
