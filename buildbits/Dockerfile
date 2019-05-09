@@ -54,3 +54,4 @@ WORKDIR /src
 # RUN chmod +x eval.sh
 ENV PYTHONPATH "$PYTHONPATH:/opt/opencv/build/lib"
 ENV PYTHONPATH "$PYTHONPATH:/src/external/east"
+ENV PYTHONPATH "$PYTHONPATH:/src/external"

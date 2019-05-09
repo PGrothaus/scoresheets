@@ -52,3 +52,12 @@ def load_east_flag_parameters():
         'n_batches_to_create', conf.get_param('n_batches_to_create'), '')
     tf.app.flags.DEFINE_boolean(
         'visualise', conf.get_param("visualise"), '')
+
+    tf.app.flags.DEFINE_string(
+        'test_data_path', conf.get_param("test_data_path"), '')
+    tf.app.flags.DEFINE_string(
+        'output_dir', conf.get_param("output_dir"), '')
+    tf.app.flags.DEFINE_bool(
+        'no_write_images', conf.get_param("no_write_images"), 'dont write images')
+    tf.app.flags.DEFINE_integer(
+        'polygons_per_example', conf.get_param("polygons_per_example"), None)
