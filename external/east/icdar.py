@@ -452,9 +452,9 @@ def generate_rbox(im_size, polys, tags):
     geo_map = np.zeros((h, w, 5), dtype=np.float32)
     # mask used during traning, to ignore some hard areas
     training_mask = np.ones((h, w), dtype=np.uint8)
-#    g = list(zip(polys, tags))
-#    random.shuffle(g)
-#    polys, tags = zip(* g[:20])
+    g = list(zip(polys, tags))
+    random.shuffle(g)
+    polys, tags = zip(* g[:FLAGS.polygons_per_example])
     for poly_idx, poly_tag in enumerate(zip(polys, tags)):
         poly = poly_tag[0]
         tag = poly_tag[1]

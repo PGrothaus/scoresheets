@@ -4,15 +4,18 @@ import math
 import os
 import numpy as np
 import tensorflow as tf
-
+import sys
 import locality_aware_nms as nms_locality
 import lanms
 
-tf.app.flags.DEFINE_string('test_data_path', '/tmp/ch4_test_images/images/', '')
-tf.app.flags.DEFINE_string('gpu_list', '0', '')
-tf.app.flags.DEFINE_string('checkpoint_path', '/tmp/east_icdar2015_resnet_v1_50_rbox/', '')
-tf.app.flags.DEFINE_string('output_dir', '/tmp/ch4_test_images/images/', '')
-tf.app.flags.DEFINE_bool('no_write_images', False, 'do not write images')
+import utils.config as conf
+from utils.tf_flags import load_east_flag_parameters
+
+fp_config = sys.argv[1]
+conf.loadconfig(fp_config)
+
+load_east_flag_parameters()
+FLAGS = tf.app.flags.FLAGS
 
 import model
 from icdar import restore_rectangle

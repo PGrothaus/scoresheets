@@ -30,7 +30,7 @@ def save_batch(batch, count):
 
 def main(argv=None):
     n_batches = FLAGS.n_batches_to_create
-    count = 0
+    count = 537
     with ProgressBar(max_value=n_batches) as bar:
         while count < n_batches:
             for batch in generator(batch_size=FLAGS.batch_size_per_gpu,

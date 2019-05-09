@@ -3,7 +3,7 @@ input_size: 512
 batch_size_per_gpu: 8
 num_readers: 2
 learning_rate: 0.0001
-max_steps: 4000
+max_steps: 10000
 moving_average_decay: 0.997
 gpu_list: '0'
 restore: False
@@ -17,21 +17,21 @@ min_crop_side_ratio: 0.1
 text_scale: 512
 
 # Random Seed
-seed: 420
+seed: 42
 
 # Dataset Creation
-n_batches_to_create: 10000
-polygons_per_example: None
+n_batches_to_create: 1000
+polygons_per_example: 25
 visualise: False
 
 # Local Settings
 #train
 pretrained_model_path: /data/scoresheets/pretrained_east/resnet_v1_50.ckpt
 training_raw_data_path: /data/scoresheets/dataset/move-section-only/train/
-training_batches_path: /data/scoresheets/dataset/move-section-only/train/batches/
-checkpoint_path: /data/scoresheets/models/move-section-only/
+training_batches_path: /data/scoresheets/dataset/move-section-only-incompletely-annotated/train/batches/
+checkpoint_path: /data/scoresheets/models/move-section-only-incompletely-annotated/
 
 # eval
 test_data_path: /data/scoresheets/dataset/move-section-only/test/
-output_dir: /data/scoresheets/models/move-section-only/eval
+output_dir: /data/scoresheets/models/move-section-only-incompletely-annotated/eval
 no_write_images: False
