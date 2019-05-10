@@ -46,6 +46,8 @@ RUN pip install editdistance
 RUN pip install numpy
 RUN apt-get install python3-tk
 RUN pip install shapely
+RUN pip install pytest
+RUN pip install mock
 
 WORKDIR /src
 # COPY . /src
