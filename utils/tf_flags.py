@@ -61,3 +61,22 @@ def load_east_flag_parameters():
         'no_write_images', conf.get_param("no_write_images"), 'dont write images')
     tf.app.flags.DEFINE_integer(
         'polygons_per_example', conf.get_param("polygons_per_example"), None)
+
+
+def load_object_detection_parameters():
+    flags.DEFINE_string('data_dir',
+        conf.get_param("data_dir"), 'Root directory to raw pet dataset.')
+    flags.DEFINE_string('output_dir',
+        conf.get_param("output_dir"), 'Path to directory to output TFRecords.')
+    flags.DEFINE_string('label_map_path',
+        conf.get_param("label_map_path"), 'Path to label map proto')
+    flags.DEFINE_boolean('faces_only',
+        conf.get_param("faces_only", 'If True, generates bounding boxes '
+                         'for pet faces.  Otherwise generates bounding boxes (as '
+                         'well as segmentations for full pet bodies).  Note that '
+                         'in the latter case, the resulting files are much larger.')
+    flags.DEFINE_string('mask_type',
+        conf.get_param("mask_type"), 'How to represent instance '
+                        'segmentation masks. Options are "png" or "numerical".')
+    flags.DEFINE_integer('num_shards',
+        conf.get_param("num_shards"), 'Number of TFRecord shards')
