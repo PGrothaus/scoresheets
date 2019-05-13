@@ -1,5 +1,5 @@
 data_dir: /data/scoresheets/dataset/object_detection/default/train/
-output_dir: /data/scoresheets/models/object_detection/default/
+output_dir: /data/scoresheets/models/object_detection/default/data/
 label_map_path: /data/scoresheets/models/object_detection/default/label_map.pbtxt
 faces_only: True
 mask_type: png
