@@ -49,6 +49,8 @@ RUN pip install shapely
 RUN pip install pytest
 RUN pip install mock
 
+RUN pip install numpy==1.16.3
+
 WORKDIR /src
 # COPY . /src
 # WORKDIR /src

@@ -445,7 +445,7 @@ def create_model_fn(detection_model_fn, configs, hparams, use_tpu=False,
             max_examples_to_draw=eval_config.num_visualizations,
             max_boxes_to_draw=eval_config.max_num_boxes_to_visualize,
             min_score_thresh=eval_config.min_score_threshold,
-            use_normalized_coordinates=False)
+            use_normalized_coordinates=True)
         vis_metric_ops = eval_metric_op_vis.get_estimator_eval_metric_ops(
             eval_dict)
 
