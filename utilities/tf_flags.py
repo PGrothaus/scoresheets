@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-import utils.config as conf
+import utilities.config as conf
 
 FLAGS = tf.app.flags.FLAGS
 
@@ -85,9 +85,11 @@ def load_object_detection_parameters():
     tf.app.flags.DEFINE_string(
         'model_dir', conf.get_param("model_dir"), 'Path to output model directory '
         'where event and checkpoint files will be written.')
-    tf.app.flags.DEFINE_string('pipeline_config_path', None, 'Path to pipeline config '
+    tf.app.flags.DEFINE_string('pipeline_config_path',
+        conf.get_param("pipeline_config_path"), 'Path to pipeline config '
                         'file.')
-    tf.app.flags.DEFINE_integer('num_train_steps', None, 'Number of train steps.')
+    tf.app.flags.DEFINE_integer('num_train_steps',
+        conf.get_param("num_train_steps"), 'Number of train steps.')
     tf.app.flags.DEFINE_boolean('eval_training_data', False,
                          'If training data should be evaluated for this job. Note '
                          'that one call only use this in eval-only mode, and '

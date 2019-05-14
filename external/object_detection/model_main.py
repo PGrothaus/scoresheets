@@ -25,8 +25,8 @@ import tensorflow as tf
 
 from object_detection import model_hparams
 from object_detection import model_lib
-from utils.tf_flags import load_object_detection_parameters
-import utils.config as conf
+from utilities.tf_flags import load_object_detection_parameters
+import utilities.config as conf
 
 
 fp = sys.argv[1]

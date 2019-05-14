@@ -26,7 +26,7 @@ from __future__ import print_function
 
 import tensorflow as tf
 
-from nets import i3d_utils
+from slim.nets import i3d_utils
 
 trunc_normal = lambda stddev: tf.truncated_normal_initializer(0.0, stddev)
 conv3d_spatiotemporal = i3d_utils.conv3d_spatiotemporal

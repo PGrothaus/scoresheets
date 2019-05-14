@@ -34,8 +34,8 @@ import random
 import PIL.Image
 import tensorflow as tf
 
-import utils.config as conf
-from utils.tf_flags import load_object_detection_parameters
+import utilities.config as conf
+from utilities.tf_flags import load_object_detection_parameters
 from object_detection.utils import dataset_util
 
 fp = sys.argv[1]
@@ -59,12 +59,14 @@ def load_annotations(fp, width=None, height=None):
         x1, y1, x2, y2, x3, y3, x4, y4 = coordinates
         xs = [x1, x2, x3, x4]
         ys = [y1, y2, y3, y4]
-        xmins.append(int(min(xs)) / width)
-        xmaxs.append(int(max(xs)) / width)
-        ymins.append(int(min(ys)) / height)
-        ymaxs.append(int(max(ys)) / height)
+        xs = list(map(int, xs))
+        ys = list(map(int, ys))
+        xmins.append(min(xs) / width)
+        xmaxs.append(max(xs) / width)
+        ymins.append(min(ys) / height)
+        ymaxs.append(max(ys) / height)
         labels.append(1)
-        class_names.append("Move".encode('utf8'))
+        class_names.append("move".encode('utf8'))
     return xmins, xmaxs, ymins, ymaxs, labels, class_names
 
 

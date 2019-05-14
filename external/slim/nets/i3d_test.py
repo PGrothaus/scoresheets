@@ -20,7 +20,7 @@ from __future__ import print_function
 
 import tensorflow as tf
 
-from nets import i3d
+from slim.nets import i3d
 
 
 class I3DTest(tf.test.TestCase):
