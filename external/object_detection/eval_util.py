@@ -86,7 +86,7 @@ def visualize_detection_results(result_dict,
                                 summary_dir='',
                                 export_dir='',
                                 agnostic_mode=False,
-                                show_groundtruth=False,
+                                show_groundtruth=True,
                                 groundtruth_box_visualization_color='black',
                                 min_score_thresh=.5,
                                 max_num_predictions=20,
@@ -208,7 +208,6 @@ def visualize_detection_results(result_dict,
     else:
       export_path = os.path.join(export_dir, 'export-{}.png'.format(tag))
     vis_utils.save_image_array_as_png(image, export_path)
-
   summary = tf.Summary(value=[
       tf.Summary.Value(
           tag=tag,

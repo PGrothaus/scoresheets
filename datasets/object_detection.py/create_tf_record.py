@@ -30,6 +30,7 @@ import io
 import logging
 import os
 import random
+import hashlib
 
 import PIL.Image
 import tensorflow as tf
@@ -77,6 +78,7 @@ def create_tf_example(image_dir, annotations_dir, example):
     with tf.gfile.GFile(img_path, 'rb') as fid:
         encoded_jpg = fid.read()
     encoded_jpg_io = io.BytesIO(encoded_jpg)
+    key = hashlib.sha256(encoded_jpg).hexdigest()
     image = PIL.Image.open(encoded_jpg_io)
     height = image.height # Image height
     width = image.width # Image width
@@ -89,16 +91,16 @@ def create_tf_example(image_dir, annotations_dir, example):
     print(len(xmins))
 
     filename = img_path # Filename of the image. Empty if image is not from file
-    image_format = b'jpeg' # b'jpeg' or b'png'
     print(height, width, source_id)
 
     tf_example = tf.train.Example(features=tf.train.Features(feature={
         'image/height': dataset_util.int64_feature(height),
         'image/width': dataset_util.int64_feature(width),
         'image/filename': dataset_util.bytes_feature(filename.encode('utf8')),
-        'image/source_id': dataset_util.bytes_feature(source_id.encode('utf8')),
+        'image/source_id': dataset_util.bytes_feature(filename.encode('utf8')),
+        'image/key/sha256': dataset_util.bytes_feature(key.encode('utf8')),
         'image/encoded': dataset_util.bytes_feature(encoded_jpg),
-        'image/format': dataset_util.bytes_feature(image_format),
+        'image/format': dataset_util.bytes_feature('jpeg'.encode('utf8')),
         'image/object/bbox/xmin': dataset_util.float_list_feature(xmins),
         'image/object/bbox/xmax': dataset_util.float_list_feature(xmaxs),
         'image/object/bbox/ymin': dataset_util.float_list_feature(ymins),
@@ -130,7 +132,7 @@ def main(_):
     random.seed(42)
     random.shuffle(examples_list)
     num_examples = len(examples_list)
-    num_train = int(0.8 * num_examples)
+    num_train = int(0.85 * num_examples)
     train_examples = examples_list[:num_train]
     val_examples = examples_list[num_train:]
 
@@ -143,6 +145,7 @@ def main(_):
         tf_example = create_tf_example(image_dir, annotations_dir, example)
         writer_eval.write(tf_example.SerializeToString())
     writer_eval.close()
+    print(len(val_examples))
 
 
 if __name__ == '__main__':

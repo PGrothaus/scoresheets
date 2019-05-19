@@ -425,7 +425,8 @@ def draw_bounding_boxes_on_image_tensors(images,
     if original_image_spatial_shape is not None:
       image_and_detections[2] = _resize_original_image(image, original_shape)
 
-    image_with_boxes = tf.py_func(visualize_boxes_fn, image_and_detections[2:],
+    image_with_boxes = tf.py_func(visualize_boxes_fn,
+                                  image_and_detections[2:],
                                   tf.uint8)
     return image_with_boxes
 
@@ -461,7 +462,6 @@ def draw_side_by_side_evaluation_image(eval_dict,
   """
   detection_fields = fields.DetectionResultFields()
   input_data_fields = fields.InputDataFields()
-
   images_with_detections_list = []
 
   # Add the batch dimension if the eval_dict is for single example.
@@ -477,17 +477,18 @@ def draw_side_by_side_evaluation_image(eval_dict,
           tf.expand_dims(
               eval_dict[detection_fields.detection_masks][indx], axis=0),
           tf.uint8)
+
     keypoints = None
     if detection_fields.detection_keypoints in eval_dict:
       keypoints = tf.expand_dims(
           eval_dict[detection_fields.detection_keypoints][indx], axis=0)
+
     groundtruth_instance_masks = None
     if input_data_fields.groundtruth_instance_masks in eval_dict:
       groundtruth_instance_masks = tf.cast(
           tf.expand_dims(
               eval_dict[input_data_fields.groundtruth_instance_masks][indx],
               axis=0), tf.uint8)
-
     images_with_detections = draw_bounding_boxes_on_image_tensors(
         tf.expand_dims(
             eval_dict[input_data_fields.original_image][indx], axis=0),
@@ -508,6 +509,7 @@ def draw_side_by_side_evaluation_image(eval_dict,
         max_boxes_to_draw=max_boxes_to_draw,
         min_score_thresh=min_score_thresh,
         use_normalized_coordinates=use_normalized_coordinates)
+
     images_with_groundtruth = draw_bounding_boxes_on_image_tensors(
         tf.expand_dims(
             eval_dict[input_data_fields.original_image][indx], axis=0),
@@ -685,6 +687,7 @@ def visualize_boxes_and_labels_on_image_array(
   if not max_boxes_to_draw:
     max_boxes_to_draw = boxes.shape[0]
   for i in range(min(max_boxes_to_draw, boxes.shape[0])):
+#  for i in range(2):
     if scores is None or scores[i] > min_score_thresh:
       box = tuple(boxes[i].tolist())
       if instance_masks is not None:
@@ -694,7 +697,7 @@ def visualize_boxes_and_labels_on_image_array(
       if keypoints is not None:
         box_to_keypoints_map[box].extend(keypoints[i])
       if scores is None:
-        box_to_color_map[box] = groundtruth_box_visualization_color
+        box_to_color_map[box] = 'DarkOrange'
       else:
         display_str = ''
         if not skip_labels:
@@ -720,11 +723,10 @@ def visualize_boxes_and_labels_on_image_array(
   for box, color in box_to_color_map.items():
     ymin, xmin, ymax, xmax = box
     if instance_masks is not None:
-      draw_mask_on_image_array(
+        draw_mask_on_image_array(
           image,
           box_to_instance_masks_map[box],
-          color=color
-      )
+          color=color)
     if instance_boundaries is not None:
       draw_mask_on_image_array(
           image,

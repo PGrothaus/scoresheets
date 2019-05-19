@@ -37,6 +37,7 @@ FLAGS = tf.app.flags.FLAGS
 
 
 def main(unused_argv):
+  tf.logging.warning("STARTING\nSTARTING\nSTARTING\n")
   flags.mark_flag_as_required('model_dir')
   flags.mark_flag_as_required('pipeline_config_path')
   config = tf.estimator.RunConfig(model_dir=FLAGS.model_dir)
