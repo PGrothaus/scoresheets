@@ -409,7 +409,8 @@ def create_model_fn(detection_model_fn, configs, hparams, use_tpu=False,
       class_agnostic = (
           fields.DetectionResultFields.detection_classes not in detections)
       groundtruth = _prepare_groundtruth_for_eval(
-          detection_model, class_agnostic,
+          detection_model,
+          class_agnostic,
           eval_input_config.max_number_of_boxes)
       use_original_images = fields.InputDataFields.original_image in features
       if use_original_images:
@@ -445,7 +446,7 @@ def create_model_fn(detection_model_fn, configs, hparams, use_tpu=False,
             max_examples_to_draw=eval_config.num_visualizations,
             max_boxes_to_draw=eval_config.max_num_boxes_to_visualize,
             min_score_thresh=eval_config.min_score_threshold,
-            use_normalized_coordinates=True)
+            use_normalized_coordinates=False)
         vis_metric_ops = eval_metric_op_vis.get_estimator_eval_metric_ops(
             eval_dict)
 
