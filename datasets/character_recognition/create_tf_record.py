@@ -61,6 +61,8 @@ def create_tf_example(filename, boxes):
     height = image.height # Image height
     width = image.width # Image width
 
+    class_names = [name.encode('utf8') for name in boxes.class_names]
+
     tf_example = tf.train.Example(features=tf.train.Features(feature={
         'image/height': dataset_util.int64_feature(height),
         'image/width': dataset_util.int64_feature(width),
@@ -78,7 +80,7 @@ def create_tf_example(filename, boxes):
         'image/object/bbox/ymax': dataset_util.float_list_feature(
             boxes.ymaxs),
         'image/object/class/text': dataset_util.bytes_list_feature(
-            boxes.class_names),
+            class_names),
         'image/object/class/label': dataset_util.int64_list_feature(
             boxes.class_labels),
         }))
@@ -92,25 +94,20 @@ def main(_):
     path_eval = os.path.join(FLAGS.output_dir, 'eval.record')
     writer_eval = tf.python_io.TFRecordWriter(path_eval)
 
-    # Write code to read in your dataset to examples variable
-    data_dir = FLAGS.data_dir
-
     logging.info('Reading from scoresheet dataset.')
-    image_dir = os.path.join(data_dir, 'images')
-    annotations_path = os.path.join(data_dir, 'annotations.json')
+    annotations_path = os.path.join(FLAGS.data_dir, 'annotations.json')
 
     with open(annotations_path, "r") as f:
-        annotations = json.loads(f)
+        annotations = json.load(f)
     for annotation in annotations:
-        image_path = get_image_path(annotation)
+        image_path = get_image_path(annotation, FLAGS.data_dir)
         boxes = get_bounding_boxes(annotation)
-        example = create_tf_example(image_path, boxes)
-        if is_train_example(annotation):
-            tf_example = create_tf_example(image_dir, annotations_path, example)
-            writer_train.write(tf_example.SerializeToString())
-        else:
-            tf_example = create_tf_example(image_dir, annotations_path, example)
-            writer_eval.write(tf_example.SerializeToString())
+        if boxes:
+            tf_example = create_tf_example(image_path, boxes)
+            if is_train_example(annotation):
+                writer_train.write(tf_example.SerializeToString())
+            else:
+                writer_eval.write(tf_example.SerializeToString())
     writer_train.close()
     writer_eval.close()
 

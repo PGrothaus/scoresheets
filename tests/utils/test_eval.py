@@ -2,7 +2,7 @@ import unittest
 import pytest
 import shapely
 
-from utils.eval_east import (
+from utilities.eval_east import (
     create_polygon,
     get_iou_for_two_polygons,
     read_polygon_file,

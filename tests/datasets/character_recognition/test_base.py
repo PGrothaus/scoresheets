@@ -91,7 +91,7 @@ class GetImagePathTestCase(unittest.TestCase):
         assert expected == path
 
 
-class GetBoundingBoxesTestCase(unittest.TesetCase):
+class GetBoundingBoxesTestCase(unittest.TestCase):
 
     def setUp(self):
         self.annotation = {
@@ -111,7 +111,11 @@ class GetBoundingBoxesTestCase(unittest.TesetCase):
         self.boxes = get_bounding_boxes(self.annotation)
 
     def test_correct_number_of_boxes(self):
-        assert len(self.boxes) == 2
+        assert len(self.boxes.xmins) == 2
+
+    def test_all_attributes_have_same_length(self):
+        for attr in self.boxes:
+            assert len(attr) == 2
 
     def test_has_correct_xmins(self):
         self.boxes.xmins == [140, 101]
@@ -150,43 +154,43 @@ class IsTrainExampleTestCase(unittest.TestCase):
             "External ID": "95.jpg",
             "Dataset Name": "Moves-Test"}
 
-        def test_returns_correct_for_image_in_moves_test(self):
-            assert is_train_example(self.annotation)
+    def test_returns_correct_for_image_in_moves_test(self):
+        assert is_train_example(self.annotation)
 
-        def test_returns_correct_for_image_in_moves_0a0(self):
-            self.annotation["Dataset Name"] = "Moves-0a0e39c7"
-            assert is_train_example(self.annotation)
+    def test_returns_correct_for_image_in_moves_0a0(self):
+        self.annotation["Dataset Name"] = "Moves-0a0e39c7"
+        assert is_train_example(self.annotation)
 
-        def test_returns_correct_for_image_in_moves_00a(self):
-            self.annotation["Dataset Name"] = "Moves-00a76a37"
-            assert is_train_example(self.annotation)
+    def test_returns_correct_for_image_in_moves_00a(self):
+        self.annotation["Dataset Name"] = "Moves-00a76a37"
+        assert is_train_example(self.annotation)
 
-        def test_returns_correct_for_image_in_moves_0ab(self):
-            self.annotation["Dataset Name"] = "Moves-0ab70b7f"
-            assert is_train_example(self.annotation)
+    def test_returns_correct_for_image_in_moves_0ab(self):
+        self.annotation["Dataset Name"] = "Moves-0ab70b7f"
+        assert is_train_example(self.annotation)
 
-        def test_returns_correct_for_image_in_moves_0b3(self):
-            self.annotation["Dataset Name"] = "Moves-0b3327d3"
-            assert is_train_example(self.annotation)
+    def test_returns_correct_for_image_in_moves_0b3(self):
+        self.annotation["Dataset Name"] = "Moves-0b3327d3"
+        assert is_train_example(self.annotation)
 
-        def test_returns_correct_for_image_in_moves_0be(self):
-            self.annotation["Dataset Name"] = "Moves-0be59ced"
-            assert is_train_example(self.annotation)
+    def test_returns_correct_for_image_in_moves_0be(self):
+        self.annotation["Dataset Name"] = "Moves-0be59ced"
+        assert is_train_example(self.annotation)
 
-        def test_returns_correct_for_image_in_moves_8a1(self):
-            self.annotation["Dataset Name"] = "Moves-8a129712"
-            assert not is_train_example(self.annotation)
+    def test_returns_correct_for_image_in_moves_8a1(self):
+        self.annotation["Dataset Name"] = "Moves-8a129712"
+        assert not is_train_example(self.annotation)
 
-        def test_returns_correct_for_image_in_moves_8b0(self):
-            self.annotation["Dataset Name"] = "Moves-8b0b0cc2"
-            assert not is_train_example(self.annotation)
+    def test_returns_correct_for_image_in_moves_8b0(self):
+        self.annotation["Dataset Name"] = "Moves-8b0b0cc2"
+        assert not is_train_example(self.annotation)
 
-        def test_returns_correct_for_test_image_in_other_moves(self):
-            self.annotation["Dataset Name"] = "Moves-other"
-            self.annotation["External ID"] = "9fbb017_4.jpg"
-            assert not is_train_example(self.annotation)
+    def test_returns_correct_for_test_image_in_other_moves(self):
+        self.annotation["Dataset Name"] = "Moves-other"
+        self.annotation["External ID"] = "9fbb017_4.jpg"
+        assert not is_train_example(self.annotation)
 
-        def test_returns_correct_for_train_image_in_other_moves(self):
-            self.annotation["Dataset Name"] = "Moves-other"
-            self.annotation["External ID"] = "7fbb017_4.jpg"
-            assert is_train_example(self.annotation)
+    def test_returns_correct_for_train_image_in_other_moves(self):
+        self.annotation["Dataset Name"] = "Moves-other"
+        self.annotation["External ID"] = "7fbb017_4.jpg"
+        assert is_train_example(self.annotation)
