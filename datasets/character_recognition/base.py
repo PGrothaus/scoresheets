@@ -70,6 +70,8 @@ def get_bounding_boxes(annotation):
         class_name = "K (king)" if class_name.startswith("K") else class_name
         class_name = "+ (check)" if class_name.startswith("+ (") else class_name
         class_label = label_map[class_name]
+        class_label = 1
+        class_name = "char"
         for box in boxes:
             coordinates = box["geometry"]
             xs = [c["x"] for c in coordinates]
@@ -91,7 +93,7 @@ def is_train_example(annotation):
         "Moves-0ab70b7f": True,
         "Moves-0b3327d3": True,
         "Moves-0be59ced": True,
-        "Moves-8a129712": False,
+        "Moves-8a129712": True,
         "Moves-8b0b0cc2": False,
     }
     dataset_name = annotation["Dataset Name"]
@@ -99,7 +101,7 @@ def is_train_example(annotation):
     if is_train is None:
         external_id = annotation["External ID"]
         if external_id.startswith("8"):
-            is_train = False
+            is_train = True
         elif external_id.startswith("9"):
             is_train = False
         else:

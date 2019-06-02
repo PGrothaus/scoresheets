@@ -27,6 +27,7 @@ Example usage:
 """
 import sys
 import io
+import random
 import logging
 import os
 import json
@@ -61,6 +62,12 @@ def create_tf_example(filename, boxes):
     height = image.height # Image height
     width = image.width # Image width
 
+    xmins = [item / width for item in boxes.xmins]
+    xmaxs = [item / width for item in boxes.xmaxs]
+
+    ymins = [item / height for item in boxes.ymins]
+    ymaxs = [item / height for item in boxes.ymaxs]
+
     class_names = [name.encode('utf8') for name in boxes.class_names]
 
     tf_example = tf.train.Example(features=tf.train.Features(feature={
@@ -71,14 +78,10 @@ def create_tf_example(filename, boxes):
         'image/key/sha256': dataset_util.bytes_feature(key.encode('utf8')),
         'image/encoded': dataset_util.bytes_feature(encoded_jpg),
         'image/format': dataset_util.bytes_feature('jpeg'.encode('utf8')),
-        'image/object/bbox/xmin': dataset_util.float_list_feature(
-            boxes.xmins),
-        'image/object/bbox/xmax': dataset_util.float_list_feature(
-            boxes.xmaxs),
-        'image/object/bbox/ymin': dataset_util.float_list_feature(
-            boxes.ymins),
-        'image/object/bbox/ymax': dataset_util.float_list_feature(
-            boxes.ymaxs),
+        'image/object/bbox/xmin': dataset_util.float_list_feature(xmins),
+        'image/object/bbox/xmax': dataset_util.float_list_feature(xmaxs),
+        'image/object/bbox/ymin': dataset_util.float_list_feature(ymins),
+        'image/object/bbox/ymax': dataset_util.float_list_feature(ymaxs),
         'image/object/class/text': dataset_util.bytes_list_feature(
             class_names),
         'image/object/class/label': dataset_util.int64_list_feature(
@@ -90,15 +93,18 @@ def create_tf_example(filename, boxes):
 def main(_):
     path_train = os.path.join(FLAGS.output_dir, 'train.record')
     writer_train = tf.python_io.TFRecordWriter(path_train)
+    count_train_samples = 0
 
     path_eval = os.path.join(FLAGS.output_dir, 'eval.record')
     writer_eval = tf.python_io.TFRecordWriter(path_eval)
+    count_eval_samples = 0
 
     logging.info('Reading from scoresheet dataset.')
     annotations_path = os.path.join(FLAGS.data_dir, 'annotations.json')
 
     with open(annotations_path, "r") as f:
         annotations = json.load(f)
+    random.shuffle(annotations)
     for annotation in annotations:
         image_path = get_image_path(annotation, FLAGS.data_dir)
         boxes = get_bounding_boxes(annotation)
@@ -106,10 +112,13 @@ def main(_):
             tf_example = create_tf_example(image_path, boxes)
             if is_train_example(annotation):
                 writer_train.write(tf_example.SerializeToString())
+                count_train_samples += 1
             else:
                 writer_eval.write(tf_example.SerializeToString())
+                count_eval_samples += 1
     writer_train.close()
     writer_eval.close()
+    print(count_train_samples, count_eval_samples)
 
 
 if __name__ == '__main__':
