@@ -194,3 +194,91 @@ class IsTrainExampleTestCase(unittest.TestCase):
         self.annotation["Dataset Name"] = "Moves-other"
         self.annotation["External ID"] = "7fbb017_4.jpg"
         assert is_train_example(self.annotation)
+
+
+class ExtractCharImageTestCase(unittest.testCase):
+
+    @mock.patch('datasets.character_recognition.base.load_image_as_bw',
+                return_value="bw-image")
+    @mock.patch('datasets.character_recognition.base.crop_box'
+                return_value="crop")
+    @mock.patch('datasets.character_recognition.base.processing',
+                return_value="processed")
+    @mock.patch('datasets.character_recognition.base.save_char_image')
+    @mock.patch('datasets.character_recognition.base.get_bounding_boxes',
+                return_value='bounding_boxes')
+    @mock.patch('datasets.character_recognition.base.iter_bounding_boxes',
+                return_value=iter(['bbox', 'bbox']))
+    def setUp(self, m_bboxes, m_save, m_process, m_crop, m_load):
+        self.image_path = "test-path"
+        self.annotation = "test-annotation"
+        self.m_load = m_load
+        self.m_crop = m_crop
+        self.m_save = m_save
+        self.m_process = m_process
+        self.m_bboxes = m_bboxes
+        self.result = extract_char_image(self.image_path, self.annotation)
+
+    def test_bounding_boxes_extracted_from_annotation(self):
+        self.m_bboxes.assert_called_with(self.annotation)
+
+    def test_image_loaded_as_bw(self):
+        self.m_load.assert_called_with(self.image_path)
+
+    def test_image_cropped(self):
+        self.m_crop.assert_called_with("bw-image", "bbox")
+
+    def test_crop_saved(self):
+        self.m_save.assert_called_with("processed")
+
+    def teset_image_is_processed(self):
+        self.m_process.assert_called_with("crop")
+
+    def test_returns_nothing(self):
+        self.result is None
+
+
+class LoadImageAsBWTestCase(unittest.testCase):
+
+    def setUp(self):
+        self.image_path = "tests/test_files/test.jpg"
+        self.result = load_image_as_bw(self.image_path)
+
+    def test_result_has_one_image_dimension(self):
+        pass
+
+    def test_result_has_correct_shape(self):
+        pass
+
+
+class CropBoxTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.image_path = "tests/test_files/test.jpg"
+        self.image = load_image_as_bw(self.image_path)
+        self.bounding_box = Box(20, 50, 30, 70, "test", 0)
+        self.result = crop_box(self.image, self.bounding_box)
+
+    def test_has_correct_size(self):
+        self.result.shape == (30, 40)
+
+    def test_returns_image(self):
+        assert isinstance(self.result, )
+
+
+class SaveCharimageTestCase(unittest.TestCase):
+
+    @mock.patch("builtins.open", new_callable=mock.mock_open)
+    def setUp(self, m_open):
+        self.image_path = "tests/test_files/test.jpg"
+        self.image = load_image_as_bw(self.image_path)
+
+        self.save_path = "test-path"
+        self.m_open = m_open
+        self.result = save_char_image(self.image, self.save_path)
+
+    def test_saved_at_correct_path(self):
+        self.m_open.assert_called_with(self.save_path)
+
+    def test_save_correct_data(self):
+        self.m_open.return_value.__enter__.assert_called_with(self.image)

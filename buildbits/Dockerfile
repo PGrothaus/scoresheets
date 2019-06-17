@@ -13,7 +13,6 @@ RUN apt-get install -y python-tk
 
 RUN pip install Cython==0.25.2
 RUN pip install contextlib2==0.5.5
-RUN pip install scikit-image==0.13.0
 RUN pip install PyYAML==3.12
 RUN pip install progressbar2==3.34.3
 
@@ -43,13 +42,18 @@ RUN ldconfig
 ### CHANGE NOTHING ABOVE THIS LINE
 
 RUN pip install editdistance
-RUN pip install numpy
 RUN apt-get install python3-tk
 RUN pip install shapely
 RUN pip install pytest
 RUN pip install mock
+RUN pip install scikit-image
 
 RUN pip install numpy==1.16.3
+
+# WORKDIR /opt
+# RUN git clone https://github.com/scikit-image/scikit-image.git
+# WORKDIR /opt/scikit-image
+# RUN pip install -e .
 
 WORKDIR /src
 # COPY . /src

@@ -1,5 +1,9 @@
 import random
 import numpy as np
+from datasets.character_recognition.move_generator import (
+    load_generated_moves,
+    GeneratedExample,
+    )
 from datasets.emnist import (
     load,
     CHESS_CHARS,
@@ -14,13 +18,15 @@ num_classes = len(label_to_id_map)
 
 
 def prep_data(key):
-    train_data = load(key)
-    examples = []
-    for k, v in train_data.items():
-        examples.extend(v)
+#    train_data = load(key)
+    examples = load_generated_moves('train')
+#    examples = []
+#    for k, v in train_data.items():
+#        examples.extend(v)
 
     random.shuffle(examples)
     imgs = np.concatenate([ex.image for ex in examples], axis=0)
+    print(imgs.shape)
     imgs = imgs[:, :, :, np.newaxis]
     targets = np.asarray([label_to_id_map[ex.label] for ex in examples])
     targets = keras.utils.to_categorical(targets)
