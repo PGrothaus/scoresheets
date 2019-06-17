@@ -7,7 +7,7 @@ import datasets.emnist as emnist
 from datasets.emnist import Example
 from collections import namedtuple
 
-GeneratedExample = namedtuple("GeneratedExample", ["image", "position"])
+GeneratedExample = namedtuple("GeneratedExample", ["image", "position", "label"])
 
 
 def load_moves(data_dir):
@@ -79,7 +79,7 @@ def represent_move(move, examples):
         positions[0] = "is-first"
         positions[-1] = "is-last"
         group = zip(move, positions)
-        return [GeneratedExample(img, pos) for img, pos in group]
+        return [GeneratedExample(ex.image, pos, ex.label) for ex, pos in group]
 
 
 def get_random_char_from_dataset(char, examples):
@@ -110,7 +110,7 @@ def load_generated_moves(key):
     data_dir = "/data/scoresheets/dataset/character-detection/"
     with open(data_dir+"generate_moves.{}.pkl".format(key), "rb") as f:
         return pickle.load(f)
-    
+
 if "__main__" == __name__:
-    generate_moves(sys.argv[1], 'train', n_moves=50000)
-    generate_moves(sys.argv[1], 'test', n_moves=20000)
+    generate_moves(sys.argv[1], 'train', n_moves=150000)
+    generate_moves(sys.argv[1], 'test', n_moves=30000)
