@@ -25,7 +25,7 @@ position_map = {"is-first": 0,
                 "is-last": 1,
                 }
 
-BATCH_SIZE = 64
+BATCH_SIZE = 300
 
 
 def prep_data(key):
@@ -108,17 +108,18 @@ model.add(keras.layers.Conv2D(filters=128, kernel_size=(
 model.add(keras.layers.Dropout(.3))
 model.add(keras.layers.Conv2D(
     filters=128, kernel_size=(2, 2), activation='relu'))
-# model.add(keras.layers.Conv2D(
-#    filters=128, kernel_size=(2, 2), activation='relu'))
+model.add(keras.layers.Conv2D(
+    filters=128, kernel_size=(2, 2), activation='relu'))
+model.add(keras.layers.Conv2D(
+    filters=128, kernel_size=(3, 3), activation='relu'))
 model.add(keras.layers.Flatten())
 model.add(keras.layers.Dense(units=128, activation='relu'))
 
 extra = keras.models.Sequential()
 extra.add(keras.layers.Dense(input_shape=(3,), units=128, activation='relu'))
-
 conc = keras.layers.multiply(inputs=[model.output, extra.output])
-
-out = keras.layers.Dense(num_classes, activation='relu')(conc)
+out = keras.layers.Dense(3*num_classes, activation='relu')(conc)
+out = keras.layers.Dense(num_classes, activation='relu')(out)
 
 net = keras.models.Model([model.input, extra.input], out)
 
@@ -131,27 +132,30 @@ training_data_generator = createGenerator(images_train, positions_train,
                                           targets_train, shuffle=True)
 validation_data_generator = createGenerator(images_test, positions_test,
                                             targets_test, shuffle=False)
+predict_data_generator = createGenerator(images_test, positions_test,
+                                            targets_test, shuffle=False)
 
 
-n_steps = targets_test.shape[0] // BATCH_SIZE + 1
+n_steps = targets_test.shape[0] // BATCH_SIZE
 history = net.fit_generator(training_data_generator,
-                            steps_per_epoch=500, epochs=2,
+                            steps_per_epoch=500, epochs=5,
                             validation_data=validation_data_generator,
                             validation_steps=n_steps,
                             )
 
-Y_pred = net.predict_generator(validation_data_generator,
+loss = net.evaluate_generator(validation_data_generator,
                                steps=n_steps)
+Y_pred = net.predict_generator(predict_data_generator,
+                               steps=n_steps)
+print(loss)
 y_pred = np.argmax(Y_pred, axis=1)
 y_test = np.argmax(targets_test, axis=1)
 print(y_test.shape, y_pred.shape, Y_pred.shape, targets_test.shape)
-print(y_pred.shape)
-print(targets_test.shape)
 print('Confusion Matrix')
-print(confusion_matrix(np.argmax(targets_test, axis=1), y_pred))
+print(confusion_matrix(y_test, y_pred))
 print('Classification Report')
 target_names = CHESS_CHARS
-print(classification_report(np.argmax(targets_test, axis=1),
+print(classification_report(y_test,
                             y_pred,
                             target_names=target_names))
 # Plot non-normalized confusion matrix
